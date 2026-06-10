@@ -8,7 +8,13 @@ O que voçê vai ver nesse Projeto
 | Azure Functions | Arquitetura serverless, com uso de gatilhos de API (HTTP Triggers) |
 | Computação em Nuvem | Infraestrutura global de data centers para hospedar, gerenciar e escalar aplicativos e dados pela internet |
 
-🔄 Executar a aplicação
+#### ⚠️ String de conexão do banco
+Modifique a string de conexão no arquivo local.settings.json se caso necessário, no trecho indicado:
+```bash 
+"Server=localhost\\SQLEXPRESS;Database=Shop;Trusted_Connection=True;TrustServerCertificate=True;"
+```
+
+#### 🔄 Executar a aplicação
 
 - Criar Migrations no Visual Studio e Update da database SQLServer .
 
@@ -29,8 +35,3 @@ Importar Coleção de testes que contém no diretório Postman **APIFunctionsAzu
 | AtualizarProduto: [PUT] | http://localhost:7006/api/AtualizarProduto |
 | ApagarProduto: [DELETE] | http://localhost:7006/api/ApagarProduto/{id} |
 
-#### ⚠️ String de conexão do banco
-Modifique a string de conexão no arquivo local.settings.json se caso necessário, no trecho indicado:
-```bash 
-"Server=localhost\\SQLEXPRESS;Database=Shop;Trusted_Connection=True;TrustServerCertificate=True;"
-```
