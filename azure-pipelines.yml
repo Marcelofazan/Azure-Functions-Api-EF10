@@ -5,17 +5,37 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-# 1. Restaura todas as dependências do NuGet e do Entity Framework
-- task: DotNetCoreCLI@2
-  displayName: 'Recuperar os pacotes'
+# 1. Instala o Azure Functions Core Tools na máquina do pipeline
+- task: FuncToolsInstaller@0
+  displayName: 'Instalar Azure Functions Core Tools'
   inputs:
-    command: 'restore'
-    projects: '**/*.csproj'
+    version: 'latest'
 
-# 2. Compila todo o projeto para validar se existem erros de sintaxe ou de código
+# 2. Restaura e compila o código do seu projeto
 - task: DotNetCoreCLI@2
-  displayName: 'Buildando o projeto'
+  displayName: 'Restaurar e Buildar'
   inputs:
     command: 'build'
     projects: '**/*.csproj'
     arguments: '--configuration Release'
+
+# 3. Executa as Functions em segundo plano e dispara os testes contra os endpoints
+- script: |
+    echo "Iniciando a Azure Function localmente no agente..."
+    # 'func start' roda em segundo plano (&) para o pipeline não travar esperando
+    func start --csharp & 
+    
+    echo "Aguardando 10 segundos para a Function inicializar totalmente..."
+    sleep 10
+    
+    echo "Executando os testes de integração contra os endpoints locais (http://localhost:7071)..."
+    dotnet test --configuration Release --logger:"trx;LogFileName=test_results.trx"
+  displayName: 'Executar e Testar Endpoints'
+
+# 4. Publica os resultados do teste na interface gráfica do Azure DevOps
+- task: PublishTestResults@2
+  displayName: 'Publicar Relatório de Testes'
+  inputs:
+    testResultsFormat: 'VSTest'
+    testResultsFiles: '**/test_results.trx'
+  condition: always() # Garante que roda mesmo se algum teste falhar
