@@ -18,19 +18,19 @@ steps:
     command: 'restore'
     projects: '**/ApiFunctionsAzure.csproj'
 
-# 3. Compila o projeto ignorando avisos estritos de variáveis nulas
+# 3. Compila o projeto (Correção aplicada usando ponto e vírgula e aspas)
 - task: DotNetCoreCLI@2
   displayName: 'Buildando o projeto'
   inputs:
     command: 'build'
     projects: '**/ApiFunctionsAzure.csproj'
-    arguments: '--configuration Release /p:NoWarn=CS8602,CS8618,CS8634'
+    arguments: '--configuration Release "/p:NoWarn=CS8602;CS8618;CS8634"'
 
-# 4. Faz uma simulação completa de compilação de produção (Garante que o EF e as rotas estão corretas)
+# 4. Faz a simulação completa de publicação
 - script: |
     echo "Navegando para o diretório do projeto..."
     cd ./ApiFunctionsAzure
     
     echo "Executando validação de publicação do Azure Functions..."
-    dotnet publish --configuration Release /p:NoWarn=CS8602,CS8618,CS8634 --output ./publish_output
+    dotnet publish --configuration Release "/p:NoWarn=CS8602;CS8618;CS8634" --output ./publish_output
   displayName: 'Validar Integridade dos Endpoints'
